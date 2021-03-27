@@ -112,4 +112,29 @@ class ProjectControllerTest extends TestCase
             })->toArray()
         ]);
     }
+
+    /** @test */
+    public function a_user_can_only_get_project_he_is_assigned_to()
+    {
+        $owner = factory(User::class)->create();
+        $otherUser = factory(User::class)->create();
+
+        $projects = factory(Project::class, 10)->create([
+            'user_id' => $otherUser->id
+        ]);
+
+        $response = $this->actingAs($owner)->json('GET', '/api/projects');
+
+        $response->assertStatus(200);
+
+        $response->assertJsonMissing([
+            'data' => $projects->map(function($project) {
+                return [
+                    'title' => $project->title,
+                    'description' => $project->description,
+                    'user_id' => $project->user_id,
+                ];
+            })->toArray()
+        ]);
+    }
 }
