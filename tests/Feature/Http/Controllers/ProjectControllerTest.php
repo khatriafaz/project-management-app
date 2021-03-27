@@ -39,6 +39,26 @@ class ProjectControllerTest extends TestCase
     }
 
     /** @test */
+    public function a_user_can_retrive_a_project()
+    {
+        $user = factory(User::class)->create();
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        $response = $this->actingAs($user)->json('GET', "/api/projects/{$project->id}");
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                'title' => $project->title,
+                'description' => $project->description,
+            ]
+        ]);
+    }
+
+    /** @test */
     public function a_user_can_update_a_project()
     {
         $user = factory(User::class)->create();
@@ -136,5 +156,33 @@ class ProjectControllerTest extends TestCase
                 ];
             })->toArray()
         ]);
+    }
+
+    /** @test */
+    public function a_user_can_be_assigned_to_a_project()
+    {
+        $owner = factory(User::class)->create();
+        $otherUser = factory(User::class)->create();
+
+        $project = factory(Project::class)->create([
+            'user_id' => $owner->id
+        ]);
+
+        $response = $this->actingAs($owner)->json('PUT', "/api/projects/{$project->id}", [
+            'users' => $otherUser->id
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                'title' => $project->title,
+                'description' => $project->description,
+            ]
+        ]);
+
+        $project->refresh();
+
+        $this->assertTrue($project->users()->count() === 2);
     }
 }

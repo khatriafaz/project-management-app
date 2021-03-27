@@ -15,6 +15,11 @@ class ProjectController extends Controller
         return ProjectResource::collection($projects);
     }
 
+    public function show(Project $project): ProjectResource
+    {
+        return new ProjectResource($project);
+    }
+
     public function store(Request $request): ProjectResource
     {
         $project = Project::create($request->all());
@@ -25,6 +30,10 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project): ProjectResource
     {
         $project->update($request->all());
+
+        if ($users = $request->input('users')) {
+            $project->assignUsers($users);
+        }
 
         return new ProjectResource($project);
     }
