@@ -8,6 +8,13 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
+    public function index(Request $request)
+    {
+        $projects = $request->user()->projects()->get();
+
+        return ProjectResource::collection($projects);
+    }
+
     public function store(Request $request): ProjectResource
     {
         $project = Project::create($request->all());
@@ -24,6 +31,8 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        $project->users()->detach();
+
         $project->delete();
 
         return response()->json([], 204);

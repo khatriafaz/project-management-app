@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\App;
 class ProjectObserver
 {
     /**
-     * Handle the Project "created" event.
+     * Handle the Project "creating" event.
      *
      * @param Project $project
      * @return void
@@ -20,5 +20,16 @@ class ProjectObserver
         }
 
         $project->user_id = auth()->user()->id;
+    }
+
+    /**
+     * Handle the Project "created" event.
+     *
+     * @param Project $project
+     * @return void
+     */
+    public function created(Project $project)
+    {
+        $project->users()->attach($project->user_id);
     }
 }

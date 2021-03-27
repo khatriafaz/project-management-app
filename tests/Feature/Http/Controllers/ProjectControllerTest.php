@@ -86,4 +86,30 @@ class ProjectControllerTest extends TestCase
             'user_id' => $project->user_id
         ]);
     }
+
+    /** @test */
+    public function a_user_can_get_a_list_of_projects()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = factory(User::class)->create();
+
+        $projects = factory(Project::class, 10)->create([
+            'user_id' => $user->id
+        ]);
+
+        $response = $this->actingAs($user)->json('GET', '/api/projects');
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => $projects->map(function($project) {
+                return [
+                    'title' => $project->title,
+                    'description' => $project->description,
+                    'user_id' => $project->user_id,
+                ];
+            })->toArray()
+        ]);
+    }
 }

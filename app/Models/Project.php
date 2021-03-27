@@ -20,4 +20,14 @@ class Project extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Get the owner of the project
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
+    }
 }
