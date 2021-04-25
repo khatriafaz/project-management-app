@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Project;
+use App\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -44,6 +45,36 @@ class TaskController extends Controller
         }
 
         $task->update($request->all());
+
+        return new TaskResource($task);
+    }
+
+    public function assign(Project $project, int $id, User $user)
+    {
+        $task = $project->tasks()->findOrFail($id);
+
+        if (!$task) {
+            throw new NotFoundHttpException('This task cannot be found');
+        }
+
+        $task->users()->attach($user);
+
+        $task->refresh();
+
+        return new TaskResource($task);
+    }
+
+    public function unassign(Project $project, int $id, User $user)
+    {
+        $task = $project->tasks()->findOrFail($id);
+
+        if (!$task) {
+            throw new NotFoundHttpException('This task cannot be found');
+        }
+
+        $task->users()->detach($user);
+
+        $task->refresh();
 
         return new TaskResource($task);
     }

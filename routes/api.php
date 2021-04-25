@@ -29,4 +29,6 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('projects/{project}/columns', 'ColumnController');
 
     Route::apiResource('projects/{project}/tasks', 'TaskController');
+    Route::post('projects/{project}/tasks/{id}/assign/{user}', 'TaskController@assign');
+    Route::post('projects/{project}/tasks/{id}/unassign/{user}', 'TaskController@unassign');
 });

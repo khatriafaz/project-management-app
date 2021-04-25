@@ -217,4 +217,55 @@ class ProjectTaskTest extends TestCase
 
         $this->assertCount(0, Task::all());
     }
+
+    /** @test */
+    public function a_user_can_be_assigned_to_a_task()
+    {
+        $user = factory(User::class)->create();
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+        $task = factory(Task::class)->create([
+            'project_id' => $project->id
+        ]);
+        $assignedUser = factory(User::class)->create();
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('POST', "/api/projects/{$project->id}/tasks/{$task->id}/assign/{$assignedUser->id}");
+
+        $response->assertOk();
+
+        $task->refresh()->load('users');
+
+        $this->assertCount(1, $task->users);
+        $this->assertSame($assignedUser->id, $task->users->first()->id);
+    }
+
+    /** @test */
+    public function a_user_can_be_unassigned_from_a_task()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = factory(User::class)->create();
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+        $task = factory(Task::class)->create([
+            'project_id' => $project->id
+        ]);
+
+        $assignedUser = factory(User::class)->create();
+        $task->users()->attach($assignedUser);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('POST', "/api/projects/{$project->id}/tasks/{$task->id}/unassign/{$assignedUser->id}");
+
+        $response->assertOk();
+
+        $task->refresh()->load('users');
+
+        $this->assertCount(0, $task->users);
+    }
 }
