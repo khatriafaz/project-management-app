@@ -57,7 +57,7 @@ class ProjectManagementTest extends TestCase
     }
 
     /** @test */
-    public function a_user_can_retrive_a_project()
+    public function a_user_can_retrieve_a_project()
     {
         $user = factory(User::class)->create();
         $project = factory(Project::class)->create([
