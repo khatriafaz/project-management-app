@@ -21,6 +21,7 @@ class ProjectResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'columns' => ColumnResource::collection($this->whenLoaded('columns')),
+            'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
             'user' => new UserResource($this->whenLoaded('user')),
         ];
     }

@@ -115,6 +115,93 @@ class ProjectManagementTest extends TestCase
     }
 
     /** @test */
+    public function a_user_can_retrieve_a_project_with_tasks()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = factory(User::class)->create();
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        $tasks = factory(Task::class, 5)->create([
+            'project_id' => $project->id,
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('GET', "/api/projects/{$project->id}", [
+            'with' => ['tasks']
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                'title' => $project->title,
+                'description' => $project->description,
+                'tasks' => $tasks->map(function ($task) {
+                    return [
+                        'id' => $task->id,
+                        'title' => $task->title
+                    ];
+                })->toArray()
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function a_user_can_retrieve_a_project_with_column_and_tasks()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = factory(User::class)->create();
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        $columns = factory(Column::class, 5)->create([
+            'project_id' => $project->id
+        ]);
+
+        foreach ($columns as $column) {
+            factory(Task::class, 5)->create([
+                'project_id' => $project->id,
+                'column_id' => $column->id,
+            ]);
+        }
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('GET', "/api/projects/{$project->id}", [
+            'with' => ['columns.tasks']
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                'title' => $project->title,
+                'description' => $project->description,
+                'columns' => $columns->map(function ($column) {
+                    $column->load('tasks');
+
+                    return [
+                        'id' => $column->id,
+                        'title' => $column->title,
+                        'tasks' => $column->tasks->map(function ($task) {
+                            return [
+                                'id' => $task->id,
+                                'title' => $task->title,
+                            ];
+                        })->toArray()
+                    ];
+                })->toArray()
+            ]
+        ]);
+    }
+
+    /** @test */
     public function a_user_can_update_a_project()
     {
         $user = factory(User::class)->create();
