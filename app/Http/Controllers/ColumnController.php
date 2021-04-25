@@ -6,7 +6,6 @@ use App\Http\Requests\ColumnRequest;
 use App\Http\Resources\ColumnResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class ColumnController extends Controller
 {
@@ -33,6 +32,6 @@ class ColumnController extends Controller
 
         return response()->json([
             'message' => 'Column deleted successfully'
-        ], Response::HTTP_NO_CONTENT);
+        ]);
     }
 }

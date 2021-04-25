@@ -108,7 +108,7 @@ class ProjectColumnsTest extends TestCase
         $project = factory(Project::class)->create([
             'user_id' => $user->id
         ]);
-        $column = factory(Column::class)->create([
+        factory(Column::class)->create([
             'project_id' => $project->id
         ]);
 
@@ -148,7 +148,10 @@ class ProjectColumnsTest extends TestCase
 
         $response = $this->json('DELETE', "/api/projects/{$project->id}/columns/{$column->id}");
 
-        $response->assertStatus(204);
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'message'
+        ]);
         $this->assertCount(0, $project->refresh()->columns);
     }
 }

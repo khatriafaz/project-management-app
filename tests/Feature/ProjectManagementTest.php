@@ -157,7 +157,10 @@ class ProjectManagementTest extends TestCase
 
         $response = $this->json('DELETE', "/api/projects/{$project->id}");
 
-        $response->assertStatus(204);
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'message'
+        ]);
 
         $this->assertCount(0, Project::all());
     }
@@ -171,7 +174,7 @@ class ProjectManagementTest extends TestCase
             'user_id' => $user->id
         ]);
 
-        $columns = factory(Column::class, 10)->create([
+        factory(Column::class, 10)->create([
             'project_id' => $project->id
         ]);
 
@@ -179,7 +182,10 @@ class ProjectManagementTest extends TestCase
 
         $response = $this->json('DELETE', "/api/projects/{$project->id}");
 
-        $response->assertStatus(204);
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'message'
+        ]);
 
         $this->assertCount(0, Project::all());
     }

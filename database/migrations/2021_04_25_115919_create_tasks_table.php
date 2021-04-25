@@ -20,6 +20,8 @@ class CreateTasksTable extends Migration
 
             $table->foreignId('project_id')->constrained();
             $table->unsignedBigInteger('column_id')->nullable();
+
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

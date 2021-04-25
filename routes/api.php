@@ -28,5 +28,5 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::apiResource('projects/{project}/columns', 'ColumnController');
 
-    Route::post('projects/{project}/tasks', 'TaskController@store');
+    Route::apiResource('projects/{project}/tasks', 'TaskController');
 });
