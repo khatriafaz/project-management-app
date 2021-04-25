@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers\Auth;
+namespace Tests\Feature\Auth;
 
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
