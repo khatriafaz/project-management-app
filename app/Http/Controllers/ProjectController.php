@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class ProjectController extends Controller
         return new ProjectResource($project);
     }
 
-    public function store(Request $request): ProjectResource
+    public function store(ProjectRequest $request): ProjectResource
     {
         $project = Project::create($request->all());
 

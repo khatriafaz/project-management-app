@@ -41,6 +41,22 @@ class ProjectManagementTest extends TestCase
     }
 
     /** @test */
+    public function a_title_is_required_while_creating_a_project()
+    {
+        $user = factory(User::class)->create();
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('POST', '/api/projects', [
+            'title' => ''
+        ]);
+
+        $response->assertJsonValidationErrors('title');
+
+        $this->assertCount(0, Project::all());
+    }
+
+    /** @test */
     public function a_user_can_retrive_a_project()
     {
         $user = factory(User::class)->create();
