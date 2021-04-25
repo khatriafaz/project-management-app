@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Column;
 use App\Models\Project;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -79,6 +80,40 @@ class ProjectManagementTest extends TestCase
     }
 
     /** @test */
+    public function a_user_can_retrieve_a_project_with_columns()
+    {
+        $user = factory(User::class)->create();
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        $columns = factory(Column::class, 5)->create([
+            'project_id' => $project->id,
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('GET', "/api/projects/{$project->id}", [
+            'with' => ['columns']
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                'title' => $project->title,
+                'description' => $project->description,
+                'columns' => $columns->map(function($column) {
+                    return [
+                        'id' => $column->id,
+                        'title' => $column->title
+                    ];
+                })->toArray()
+            ]
+        ]);
+    }
+
+    /** @test */
     public function a_user_can_update_a_project()
     {
         $user = factory(User::class)->create();
@@ -151,7 +186,6 @@ class ProjectManagementTest extends TestCase
                 return [
                     'title' => $project->title,
                     'description' => $project->description,
-                    'user_id' => $project->user_id,
                 ];
             })->toArray()
         ]);

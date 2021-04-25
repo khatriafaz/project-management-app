@@ -16,8 +16,12 @@ class ProjectController extends Controller
         return ProjectResource::collection($projects);
     }
 
-    public function show(Project $project): ProjectResource
+    public function show(Project $project, Request $request): ProjectResource
     {
+        foreach ($request->input('with', []) as $relation) {
+            $project->loadMissing($relation);
+        }
+
         return new ProjectResource($project);
     }
 
