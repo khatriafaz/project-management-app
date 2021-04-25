@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProjectRequest;
 use App\Http\Resources\ProjectResource;
+use App\Models\Column;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -55,6 +56,17 @@ class ProjectController extends Controller
         }
 
         return new ProjectResource($project->refresh());
+    }
+
+    public function orderColumns(Project $project, Request $request)
+    {
+        Column::reOrderForProject($project, $request->input('columnIds'));
+
+        foreach (Arr::wrap($request->input('with', [])) as $relation) {
+            $project->loadMissing($relation);
+        }
+
+        return new ProjectResource($project);
     }
 
     public function destroy(Project $project)

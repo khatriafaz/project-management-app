@@ -24,6 +24,7 @@ Route::post('login', 'Auth\LoginController@login')->name('login');
 Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('projects', 'ProjectController');
     Route::put('projects/{project}/un-assign', 'ProjectController@unAssingn');
+    Route::put('projects/{project}/order-columns', 'ProjectController@orderColumns');
 
     Route::post('projects/{project}/columns', 'ColumnController@store');
     Route::patch('projects/{project}/columns/{columnId}', 'ColumnController@update');

@@ -103,7 +103,7 @@ class ProjectManagementTest extends TestCase
             'data' => [
                 'title' => $project->title,
                 'description' => $project->description,
-                'columns' => $columns->map(function($column) {
+                'columns' => $columns->map(function ($column) {
                     return [
                         'id' => $column->id,
                         'title' => $column->title
@@ -182,7 +182,7 @@ class ProjectManagementTest extends TestCase
         $response->assertStatus(200);
 
         $response->assertJson([
-            'data' => $projects->map(function($project) {
+            'data' => $projects->map(function ($project) {
                 return [
                     'title' => $project->title,
                     'description' => $project->description,
@@ -209,7 +209,7 @@ class ProjectManagementTest extends TestCase
         $response->assertStatus(200);
 
         $response->assertJson([
-            'data' => $projects->map(function($project) use ($user) {
+            'data' => $projects->map(function ($project) use ($user) {
                 return [
                     'title' => $project->title,
                     'description' => $project->description,
@@ -239,7 +239,7 @@ class ProjectManagementTest extends TestCase
         $response->assertStatus(200);
 
         $response->assertJsonMissing([
-            'data' => $projects->map(function($project) {
+            'data' => $projects->map(function ($project) {
                 return [
                     'title' => $project->title,
                     'description' => $project->description,
@@ -309,5 +309,62 @@ class ProjectManagementTest extends TestCase
         $project->refresh();
 
         $this->assertCount(1, $project->users);
+    }
+
+    /** @test */
+    public function a_projects_columns_can_be_reordered()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = factory(User::class)->create();
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+        $columns = factory(Column::class, 10)->create([
+            'project_id' => $project->id
+        ]);
+
+        $newOrder = $columns->shuffle();
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('PUT', "/api/projects/{$project->id}/order-columns", [
+            'columnIds' => $newOrder->map(function ($column) {
+                return $column->id;
+            })->toArray(),
+            'with' => 'columns'
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                'title' => $project->title,
+                'description' => $project->description,
+                'columns' => $newOrder->map(function ($column) {
+                    return [
+                        'title' => $column->title
+                    ];
+                })->toArray()
+            ]
+        ]);
+
+        $this->json('GET', "/api/projects/{$project->id}", [
+            'with' => 'columns'
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                'title' => $project->title,
+                'description' => $project->description,
+                'columns' => $newOrder->map(function ($column) {
+                    return [
+                        'title' => $column->title
+                    ];
+                })->toArray()
+            ]
+        ]);
     }
 }

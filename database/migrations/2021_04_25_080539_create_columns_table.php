@@ -17,6 +17,7 @@ class CreateColumnsTable extends Migration
             $table->id();
             $table->string('title');
             $table->foreignId('project_id')->constrained();
+            $table->unsignedBigInteger('order')->nullable();
             $table->timestamps();
         });
     }
