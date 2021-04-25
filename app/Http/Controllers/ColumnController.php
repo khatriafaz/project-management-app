@@ -17,18 +17,18 @@ class ColumnController extends Controller
         return new ColumnResource($column);
     }
 
-    public function update(Project $project, int $columnId, Request $request)
+    public function update(Project $project, int $id, Request $request)
     {
-        $column = $project->columns()->findOrFail($columnId);
+        $column = $project->columns()->findOrFail($id);
 
         $column->update($request->all());
 
         return new ColumnResource($column);
     }
 
-    public function destroy(Project $project, int $columnId)
+    public function destroy(Project $project, int $id)
     {
-        $column = $project->columns()->findOrFail($columnId);
+        $column = $project->columns()->findOrFail($id);
         $column->delete();
 
         return response()->json([

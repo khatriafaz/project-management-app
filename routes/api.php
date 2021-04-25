@@ -26,9 +26,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::put('projects/{project}/un-assign', 'ProjectController@unAssingn');
     Route::put('projects/{project}/order-columns', 'ProjectController@orderColumns');
 
-    Route::post('projects/{project}/columns', 'ColumnController@store');
-    Route::patch('projects/{project}/columns/{columnId}', 'ColumnController@update');
-    Route::delete('projects/{project}/columns/{columnId}', 'ColumnController@destroy');
+    Route::apiResource('projects/{project}/columns', 'ColumnController');
 
     Route::post('projects/{project}/tasks', 'TaskController@store');
 });
