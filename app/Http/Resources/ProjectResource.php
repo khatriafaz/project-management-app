@@ -20,8 +20,8 @@ class ProjectResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'columns' => $this->whenLoaded('columns'),
-            'user' => $this->whenLoaded('user'),
+            'columns' => ColumnResource::collection($this->whenLoaded('columns')),
+            'user' => new UserResource($this->whenLoaded('user')),
         ];
     }
 }

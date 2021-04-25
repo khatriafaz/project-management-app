@@ -6,19 +6,24 @@ use App\Http\Requests\ProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $projects = $request->user()->projects()->get();
+        $query = $request->user()->projects();
 
-        return ProjectResource::collection($projects);
+        foreach (Arr::wrap($request->input('with', [])) as $relation) {
+            $query->with($relation);
+        }
+
+        return ProjectResource::collection($query->get());
     }
 
     public function show(Project $project, Request $request): ProjectResource
     {
-        foreach ($request->input('with', []) as $relation) {
+        foreach (Arr::wrap($request->input('with', [])) as $relation) {
             $project->loadMissing($relation);
         }
 

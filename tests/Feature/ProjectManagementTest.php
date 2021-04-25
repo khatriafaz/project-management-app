@@ -192,6 +192,37 @@ class ProjectManagementTest extends TestCase
     }
 
     /** @test */
+    public function a_user_can_get_a_list_of_projects_with_relations()
+    {
+        $user = factory(User::class)->create();
+
+        $projects = factory(Project::class, 10)->create([
+            'user_id' => $user->id
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('GET', '/api/projects', [
+            'with' => ['user']
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => $projects->map(function($project) use ($user) {
+                return [
+                    'title' => $project->title,
+                    'description' => $project->description,
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                    ]
+                ];
+            })->toArray()
+        ]);
+    }
+
+    /** @test */
     public function a_user_can_only_get_project_he_is_assigned_to()
     {
         $owner = factory(User::class)->create();
