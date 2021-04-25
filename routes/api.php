@@ -28,4 +28,5 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::post('projects/{project}/columns', 'ColumnController@store');
     Route::patch('projects/{project}/columns/{columnId}', 'ColumnController@update');
+    Route::delete('projects/{project}/columns/{columnId}', 'ColumnController@destroy');
 });

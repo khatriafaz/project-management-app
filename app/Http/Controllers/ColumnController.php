@@ -6,6 +6,7 @@ use App\Http\Requests\ColumnRequest;
 use App\Http\Resources\ColumnResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ColumnController extends Controller
 {
@@ -23,5 +24,15 @@ class ColumnController extends Controller
         $column->update($request->all());
 
         return new ColumnResource($column);
+    }
+
+    public function destroy(Project $project, int $columnId)
+    {
+        $column = $project->columns()->findOrFail($columnId);
+        $column->delete();
+
+        return response()->json([
+            'message' => 'Column deleted successfully'
+        ], Response::HTTP_NO_CONTENT);
     }
 }

@@ -18,6 +18,7 @@ class CreateColumnsTable extends Migration
             $table->string('title');
             $table->foreignId('project_id')->constrained();
             $table->unsignedBigInteger('order')->nullable();
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

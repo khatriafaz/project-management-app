@@ -130,4 +130,25 @@ class ProjectColumnsTest extends TestCase
         $project->refresh();
         $this->assertCount(1, $project->columns);
     }
+
+    /** @test */
+    public function a_column_can_be_deleted()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = factory(User::class)->create();
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+        $column = factory(Column::class)->create([
+            'project_id' => $project->id
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('DELETE', "/api/projects/{$project->id}/columns/{$column->id}");
+
+        $response->assertStatus(204);
+        $this->assertCount(0, $project->refresh()->columns);
+    }
 }

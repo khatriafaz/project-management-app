@@ -19,6 +19,7 @@ class CreateProjectsTable extends Migration
             $table->text('description')->nullable();
 
             $table->foreignId('user_id')->constrained();
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

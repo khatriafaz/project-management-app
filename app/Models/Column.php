@@ -5,10 +5,13 @@ namespace App\Models;
 use App\Scopes\OrderScope;
 use ArrayAccess;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use InvalidArgumentException;
 
 class Column extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = ['title'];
 
     /**

@@ -159,11 +159,7 @@ class ProjectManagementTest extends TestCase
 
         $response->assertStatus(204);
 
-        $this->assertDatabaseMissing('projects', [
-            'title' => $project->title,
-            'description' => $project->description,
-            'user_id' => $project->user_id
-        ]);
+        $this->assertCount(0, Project::all());
     }
 
     /** @test */
@@ -185,11 +181,7 @@ class ProjectManagementTest extends TestCase
 
         $response->assertStatus(204);
 
-        $this->assertDatabaseMissing('projects', [
-            'title' => $project->title,
-            'description' => $project->description,
-            'user_id' => $project->user_id
-        ]);
+        $this->assertCount(0, Project::all());
     }
 
     /** @test */
