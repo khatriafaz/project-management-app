@@ -167,6 +167,32 @@ class ProjectManagementTest extends TestCase
     }
 
     /** @test */
+    public function a_project_with_columns_can_be_deleted()
+    {
+        $user = factory(User::class)->create();
+
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        $columns = factory(Column::class, 10)->create([
+            'project_id' => $project->id
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('DELETE', "/api/projects/{$project->id}");
+
+        $response->assertStatus(204);
+
+        $this->assertDatabaseMissing('projects', [
+            'title' => $project->title,
+            'description' => $project->description,
+            'user_id' => $project->user_id
+        ]);
+    }
+
+    /** @test */
     public function a_user_can_get_a_list_of_projects()
     {
         $user = factory(User::class)->create();
