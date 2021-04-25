@@ -48,6 +48,15 @@ class ProjectController extends Controller
         return new ProjectResource($project);
     }
 
+    public function unAssingn(Request $request, Project $project)
+    {
+        if ($users = $request->input('users')) {
+            $project->unAssignUsers($users);
+        }
+
+        return new ProjectResource($project->refresh());
+    }
+
     public function destroy(Project $project)
     {
         $project->users()->detach();

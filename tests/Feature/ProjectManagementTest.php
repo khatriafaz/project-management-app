@@ -293,7 +293,7 @@ class ProjectManagementTest extends TestCase
 
         Sanctum::actingAs($owner);
 
-        $response = $this->json('PUT', "/api/projects/{$project->id}", [
+        $response = $this->json('PUT', "/api/projects/{$project->id}/un-assign", [
             'users' => $otherUser->id
         ]);
 
