@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ProjectControllerTest extends TestCase
@@ -20,7 +21,9 @@ class ProjectControllerTest extends TestCase
         $user = factory(User::class)->create();
         $project = factory(Project::class)->make();
 
-        $response = $this->actingAs($user)->json('POST', '/api/projects', $project->toArray());
+        Sanctum::actingAs($user);
+
+        $response = $this->json('POST', '/api/projects', $project->toArray());
 
         $response->assertStatus(201);
 
@@ -46,7 +49,9 @@ class ProjectControllerTest extends TestCase
             'user_id' => $user->id
         ]);
 
-        $response = $this->actingAs($user)->json('GET', "/api/projects/{$project->id}");
+        Sanctum::actingAs($user);
+
+        $response = $this->json('GET', "/api/projects/{$project->id}");
 
         $response->assertStatus(200);
 
@@ -66,7 +71,9 @@ class ProjectControllerTest extends TestCase
             'user_id' => $user->id
         ]);
 
-        $response = $this->actingAs($user)->json('PUT', "/api/projects/{$project->id}", [
+        Sanctum::actingAs($user);
+
+        $response = $this->json('PUT', "/api/projects/{$project->id}", [
             'title' => $project->title . '_updated',
             'description' => $project->description . '_updated',
         ]);
@@ -96,7 +103,9 @@ class ProjectControllerTest extends TestCase
             'user_id' => $user->id
         ]);
 
-        $response = $this->actingAs($user)->json('DELETE', "/api/projects/{$project->id}");
+        Sanctum::actingAs($user);
+
+        $response = $this->json('DELETE', "/api/projects/{$project->id}");
 
         $response->assertStatus(204);
 
@@ -110,15 +119,15 @@ class ProjectControllerTest extends TestCase
     /** @test */
     public function a_user_can_get_a_list_of_projects()
     {
-        $this->withoutExceptionHandling();
-
         $user = factory(User::class)->create();
 
         $projects = factory(Project::class, 10)->create([
             'user_id' => $user->id
         ]);
 
-        $response = $this->actingAs($user)->json('GET', '/api/projects');
+        Sanctum::actingAs($user);
+
+        $response = $this->json('GET', '/api/projects');
 
         $response->assertStatus(200);
 
@@ -143,7 +152,9 @@ class ProjectControllerTest extends TestCase
             'user_id' => $otherUser->id
         ]);
 
-        $response = $this->actingAs($owner)->json('GET', '/api/projects');
+        Sanctum::actingAs($owner);
+
+        $response = $this->json('GET', '/api/projects');
 
         $response->assertStatus(200);
 
@@ -168,7 +179,9 @@ class ProjectControllerTest extends TestCase
             'user_id' => $owner->id
         ]);
 
-        $response = $this->actingAs($owner)->json('PUT', "/api/projects/{$project->id}", [
+        Sanctum::actingAs($owner);
+
+        $response = $this->json('PUT', "/api/projects/{$project->id}", [
             'users' => $otherUser->id
         ]);
 

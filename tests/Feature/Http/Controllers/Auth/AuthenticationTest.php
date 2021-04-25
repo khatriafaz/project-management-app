@@ -4,6 +4,7 @@ namespace Tests\Feature\Http\Controllers\Auth;
 
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -37,7 +38,9 @@ class AuthenticationTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $response = $this->actingAs($user)->json('GET', '/api/user');
+        Sanctum::actingAs($user);
+
+        $response = $this->json('GET', '/api/user');
 
         $response->assertStatus(200);
 
