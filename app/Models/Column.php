@@ -35,4 +35,9 @@ class Column extends Model
                 ->update(['order' => $startOrder++]);
         }
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }
