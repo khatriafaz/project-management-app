@@ -278,4 +278,36 @@ class ProjectManagementTest extends TestCase
 
         $this->assertTrue($project->users()->count() === 2);
     }
+
+    /** @test */
+    public function an_already_assigned_user_can_be_unassinged_from_a_project()
+    {
+        $owner = factory(User::class)->create();
+        $otherUser = factory(User::class)->create();
+
+        $project = factory(Project::class)->create([
+            'user_id' => $owner->id
+        ]);
+
+        $project->assignUsers($otherUser);
+
+        Sanctum::actingAs($owner);
+
+        $response = $this->json('PUT', "/api/projects/{$project->id}", [
+            'users' => $otherUser->id
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                'title' => $project->title,
+                'description' => $project->description,
+            ]
+        ]);
+
+        $project->refresh();
+
+        $this->assertCount(1, $project->users);
+    }
 }
