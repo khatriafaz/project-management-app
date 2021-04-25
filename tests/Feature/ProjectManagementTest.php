@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Column;
 use App\Models\Project;
+use App\Models\Task;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -188,6 +189,33 @@ class ProjectManagementTest extends TestCase
         ]);
 
         $this->assertCount(0, Project::all());
+        $this->assertCount(0, $project->columns);
+    }
+
+    /** @test */
+    public function a_project_with_tasks_can_be_deleted()
+    {
+        $user = factory(User::class)->create();
+
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        factory(Task::class, 10)->create([
+            'project_id' => $project->id
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->json('DELETE', "/api/projects/{$project->id}");
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'message'
+        ]);
+
+        $this->assertCount(0, Project::all());
+        $this->assertCount(0, $project->tasks);
     }
 
     /** @test */
